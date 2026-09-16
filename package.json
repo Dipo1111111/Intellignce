@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "cp .next/standalone/.next/routes-manifest.json .next/standalone/routes-manifest.json",
     "start": "next start",
     "lint": "eslint",
     "db:push": "drizzle-kit push",
