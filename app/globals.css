@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #e1191a;
+  --color-ink: #14090b;
+  --color-ink-soft: #7a4a4b;
+  --color-rail: #a88b8c;
+  --color-line: #e9dcdf;
+  --color-line-strong: #d8c2c5;
+  --color-paper: #ffffff;
+  --color-paper2: #fbf3f2;
+  --color-ok: #1f7a3d;
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01" on;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer components {
+  /* Spec-sheet micro label — mono, tracked, uppercase. */
+  .microlabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .microlabel strong,
+  .microlabel b {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .which {
+    color: var(--color-accent);
+  }
+
+  .card {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+  }
+
+  .card-tint {
+    background: var(--color-paper2);
+    border: 1px solid var(--color-line);
+  }
+
+  .hrule {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .sbracket {
+    border-left: 2px solid var(--color-accent);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-ink);
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .btn-accent {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+  .btn-accent:hover {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-ink);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .field {
+    width: 100%;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-paper);
+    padding: 9px 11px;
+    font-size: 14px;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--color-line-strong);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    color: var(--color-ink-soft);
+  }
+  .chip sup {
+    color: var(--color-accent);
+    font-size: 9px;
+  }
+}
