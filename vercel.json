@@ -1,4 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/nextjs-build",
+      "config": {
+        "target": "standalone",
+        "distDir": ".next/standalone"
+      }
+    }
+  ],
   "routes": [
     {
       "src": "/(.*)",
