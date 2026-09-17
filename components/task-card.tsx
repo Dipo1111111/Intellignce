@@ -15,6 +15,14 @@ type TaskCardProps = {
   isToday: boolean;
 };
 
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function TaskCard({
   taskId,
   moduleName,
@@ -50,46 +58,35 @@ export function TaskCard({
 
   return (
     <div
-      className={`card group flex flex-col gap-4 p-5 transition-all duration-300 md:p-6 ${
-        done ? "opacity-60 saturate-50" : "hover:border-line-strong hover:shadow-[0_24px_70px_-30px_rgba(34,211,238,0.35)]"
-      }`}
+      className={`card flex flex-col gap-4 p-5 transition-colors md:p-6 ${done ? "bg-[#f2f4f7]" : ""}`}
       data-done={done}
     >
       <div className="flex items-start gap-4">
         <button
           type="button"
-          aria-label={done ? "Mark as not done" : "Mark as done"}
+          aria-label={done ? "Mark as not done" : "Log this block as done"}
           onClick={() => save({ completed: !done })}
-          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[15px] transition-all duration-200 ${
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 font-display text-lg font-bold transition-all ${
             done
-              ? "border-transparent bg-gradient-to-br from-cyan-300 to-violet-400 text-[#03252c] shadow-[0_0_20px_-2px_rgba(34,211,238,0.9)]"
-              : "border-line-strong text-transparent hover:border-cyan-300/70 hover:shadow-[0_0_16px_-2px_rgba(34,211,238,0.6)]"
+              ? "lap-snap border-accent bg-accent text-white"
+              : "border-line-strong bg-paper2 text-transparent hover:border-accent hover:text-accent-ink"
           }`}
         >
-          ✓
+          <CheckIcon />
         </button>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h3
-              className={`font-display text-[17px] font-semibold leading-tight tracking-tight ${
-                done ? "text-ink-soft line-through decoration-cyan-300/60" : ""
-              }`}
-            >
+            <h3 className={`font-display text-[26px] font-semibold uppercase leading-none tracking-wide ${done ? "text-ink-soft line-through decoration-accent/60" : ""}`}>
               {moduleName}
             </h3>
             <span className="microlabel">
-              {scheduledMinutes} MIN · <span className="which">SCHEDULED</span>
+              {scheduledMinutes} min · <span className="which">scheduled</span>
             </span>
           </div>
-          <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-soft">
-            ABILITY {targetAbility} ·{" "}
-            <a
-              className="text-accent underline decoration-cyan-300/40 underline-offset-4 transition-colors hover:text-ink"
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open trainer →
+          <p className="microlabel mt-1.5">
+            Ability {targetAbility} ·{" "}
+            <a className="text-accent-ink underline decoration-accent/40 underline-offset-4 hover:text-ink" href={url} target="_blank" rel="noopener noreferrer">
+              Open trainer
             </a>
           </p>
         </div>
@@ -105,7 +102,7 @@ export function TaskCard({
           }}
           className="grid grid-cols-1 gap-3 border-t border-line pt-4 sm:grid-cols-[140px_1fr_auto]"
         >
-          <label className="microlabel flex flex-col gap-1.5">
+          <label className="label flex flex-col gap-1.5">
             Actual min
             <input
               className="field"
@@ -118,7 +115,7 @@ export function TaskCard({
               onChange={(e) => setMinutes(e.target.value === "" ? null : Number(e.target.value))}
             />
           </label>
-          <label className="microlabel flex flex-col gap-1.5">
+          <label className="label flex flex-col gap-1.5">
             Notes
             <input
               className="field"
@@ -133,7 +130,7 @@ export function TaskCard({
           </button>
         </form>
       )}
-      {err && <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warn">{err}</p>}
+      {err && <p className="microlabel text-warn">{err}</p>}
     </div>
   );
 }

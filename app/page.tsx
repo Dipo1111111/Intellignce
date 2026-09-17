@@ -1,157 +1,124 @@
 import Link from "next/link";
 
 const modules = [
-  { index: "M.01", name: "Dual N-Back", ability: "WORKING MEMORY", dose: "25 MIN × 5/WK" },
-  { index: "M.02", name: "Matrix Reasoning", ability: "FLUID REASONING", dose: "35 MIN × 4/WK" },
-  { index: "M.03", name: "Learning Sprint", ability: "MIXED", dose: "45 MIN × 5/WK" },
-  { index: "M.04", name: "Processing Speed", ability: "SPEED", dose: "07 MIN × 4/WK" },
-  { index: "M.05", name: "Logic Puzzles", ability: "SUPPORT", dose: "15 MIN × 4/WK" },
-];
-
-const stats = [
-  { value: "+4 → +7", label: "EST. IQ GAIN" },
-  { value: "08", label: "WEEKS" },
-  { value: "05", label: "MODULES" },
+  { index: "M.01", name: "Dual N-Back", ability: "Working memory", dose: "25 MIN × 5/WK" },
+  { index: "M.02", name: "Matrix Reasoning", ability: "Fluid reasoning", dose: "35 MIN × 4/WK" },
+  { index: "M.03", name: "Learning Sprint", ability: "Mixed", dose: "45 MIN × 5/WK" },
+  { index: "M.04", name: "Processing Speed", ability: "Speed", dose: "07 MIN × 4/WK" },
+  { index: "M.05", name: "Logic Puzzles", ability: "Support", dose: "15 MIN × 4/WK" },
 ];
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-6 md:px-8 md:pt-8">
-        <header className="float-in flex items-center justify-between gap-4 pb-6">
-          <span className="font-display text-lg font-bold tracking-tight">
-            INTELLG<span className="text-gradient">NCE</span>
+        <header className="float-in flex items-center justify-between gap-4 pb-8">
+          <span className="font-display text-[22px] font-bold uppercase tracking-wide">
+            Intellgnce
           </span>
           <span className="flex items-center gap-3">
             <span className="chip hidden sm:inline-flex">
               <span className="pulse-dot" aria-hidden />
-              SYSTEM ONLINE
+              Program of record · 08 wks
             </span>
             <Link className="btn btn-accent" href="/today">
-              Enter →
+              Enter
             </Link>
           </span>
         </header>
 
-        <section className="panel-hero float-in p-8 md:p-14" style={{ animationDelay: "80ms" }}>
-          <div className="orb orb-drift left-[8%] top-[-60px] h-56 w-56 bg-cyan-400/20" aria-hidden />
-          <div
-            className="orb orb-drift right-[4%] top-[30%] h-64 w-64 bg-violet-500/20"
-            style={{ animationDelay: "-6s" }}
-            aria-hidden
-          />
-          <div className="relative">
-            <p className="microlabel">
-              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-cyan-300 align-middle shadow-[0_0_10px_2px_rgba(34,211,238,0.8)]" aria-hidden />
-              COGNITIVE TRAINING · SCHEDULED
-            </p>
-            <h1 className="mt-4 font-display text-[42px] font-bold leading-[1.02] tracking-tight md:text-7xl">
-              Measured
+        <section className="float-in grid gap-10 md:grid-cols-[1.2fr_1fr] md:items-end" style={{ animationDelay: "80ms" }}>
+          <div>
+            <h1 className="font-display text-6xl font-bold uppercase leading-[0.95] tracking-tight md:text-8xl">
+              Eight weeks.
               <br />
-              <span className="text-gradient">intelligence.</span>
+              Every day scheduled.
             </h1>
-            <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft md:text-base">
-              INTELLGNCE is a planner, tracker, and structured path for scientifically
-              supported cognitive training. Pick the Core plan and it generates every
-              day of the next eight weeks — training happens off-site, this is the
-              scheduler and ledger.
+            <p className="mt-6 max-w-xl text-[16px] leading-relaxed text-ink-soft md:text-lg">
+              INTELLGNCE writes all 56 days of a cognitive training program in
+              advance, then keeps the ledger as you train. The work happens on
+              dedicated trainer sites — this is the plan on the wall and the
+              stopwatch on the desk.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link className="btn btn-accent" href="/today">
-                Start training →
+                Start training
               </Link>
               <Link className="btn btn-ghost" href="/science">
-                Read the science
+                Read the method
               </Link>
             </div>
-            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-line pt-6">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <p className="font-display text-2xl font-bold tracking-tight text-gradient md:text-4xl">
-                    {s.value}
-                  </p>
-                  <p className="microlabel mt-1.5">{s.label}</p>
+          </div>
+          <div className="card p-6">
+            <p className="label">Core program · splits</p>
+            <p className="split-num mt-2 text-6xl">
+              +4<span className="text-ink-soft">–</span>+7 <span className="font-sans text-base font-semibold tracking-normal text-ink-soft">IQ est.</span>
+            </p>
+            <dl className="mt-5 space-y-0 border-t border-line">
+              {[
+                ["Duration", "08 weeks · 56 days"],
+                ["Sessions", "5 modules · ~2 hrs/day max"],
+                ["Evidence", "Strong → supportive, labeled"],
+                ["Account", "None needed"],
+              ].map(([k, v]) => (
+                <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5 last:border-b-0">
+                  <dt className="label">{k}</dt>
+                  <dd className="microlabel text-right text-ink">{v}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
         </section>
 
-        <section className="mt-12 md:mt-16">
-          <p className="microlabel">FIG.00 — THE PRESCRIPTION</p>
-          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">
-            Five modules<span className="text-gradient">.</span> One dose<span className="text-gradient">.</span>
-          </h2>
-          <div className="card mt-6 overflow-hidden">
-            {modules.map((m, i) => (
+        <section className="mt-14 md:mt-20">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="font-display text-3xl font-bold uppercase tracking-tight md:text-4xl">
+              The prescription
+            </h2>
+            <p className="microlabel">05 modules · fixed doses</p>
+          </div>
+          <div className="card mt-5 overflow-hidden">
+            {modules.map((m) => (
               <div
                 key={m.index}
-                className="group grid grid-cols-2 items-center gap-2 border-b border-line px-5 py-4 transition-colors last:border-b-0 hover:bg-white/[0.04] md:grid-cols-[80px_1fr_170px_170px_40px] md:px-6"
+                className="grid grid-cols-[52px_1fr_auto] items-center gap-3 border-b border-line px-5 py-4 last:border-b-0 md:grid-cols-[64px_1fr_180px_170px] md:px-6"
               >
-                <span className="microlabel">{m.index}</span>
-                <span className="text-[15px] font-semibold tracking-tight">
-                  {m.name}
-                  <span className="ml-2 hidden font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft sm:inline">
-                    {m.ability}
-                  </span>
+                <span className="split-num text-xl text-ink-soft">{m.index}</span>
+                <span>
+                  <span className="block text-[16px] font-semibold tracking-tight">{m.name}</span>
+                  <span className="label mt-0.5 block text-[10px]">{m.ability}</span>
                 </span>
-                <span className="microlabel hidden md:block">{m.ability}</span>
-                <span className="microlabel text-right md:text-left">{m.dose}</span>
-                <span className="hidden text-right font-mono text-sm text-rail transition-all group-hover:translate-x-1 group-hover:text-accent md:block" aria-hidden>
-                  {String(i + 1).padStart(2, "0")} →
-                </span>
+                <span className="microlabel hidden text-ink md:block">{m.ability}</span>
+                <span className="microlabel text-right">{m.dose}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-12 grid gap-5 md:mt-16 md:grid-cols-3">
-          {[
-            {
-              n: "01",
-              t: "Pick the Core plan",
-              b: "One program of record: eight weeks, expected range stated up front, no guesswork about what to do each day.",
-            },
-            {
-              n: "02",
-              t: "Train off-site, log here",
-              b: "Do the work on dedicated training sites. Check off tasks, log minutes and notes — the ledger keeps the dose honest.",
-            },
-            {
-              n: "03",
-              t: "Watch the estimate",
-              b: "Completed dose converts into an estimated IQ-gain range, with streaks, history, and a calendar grid of the run.",
-            },
-          ].map((s) => (
-            <div key={s.n} className="card group p-6 transition-transform duration-300 hover:-translate-y-1">
-              <p className="font-display text-sm font-bold text-gradient">{s.n}</p>
-              <h3 className="mt-3 font-display text-lg font-semibold tracking-tight">{s.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.b}</p>
+        <section className="card-tint mt-10 p-8 md:p-10">
+          <div className="grid gap-8 md:grid-cols-[1fr_1fr_auto] md:items-center">
+            <div>
+              <h2 className="font-display text-2xl font-bold uppercase tracking-tight md:text-3xl">
+                No account. No login.
+              </h2>
+              <p className="mt-2 max-w-md text-[15px] leading-relaxed text-ink-soft">
+                Open today&apos;s sheet and start the first block. Your program
+                lives here, ready when you are.
+              </p>
             </div>
-          ))}
-        </section>
-
-        <section className="card-tint mt-12 p-8 text-center md:mt-16 md:p-12">
-          <p className="microlabel">
-            <span className="pulse-dot mr-2 align-middle" aria-hidden />
-            NO ACCOUNT · NO LOGIN · JUST TRAIN
-          </p>
-          <h2 className="mx-auto mt-4 max-w-xl font-display text-2xl font-bold tracking-tight md:text-3xl">
-            Your program is one tap away<span className="text-gradient">.</span>
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-ink-soft">
-            Open today&apos;s checklist and start the first block.
-          </p>
-          <Link className="btn btn-accent mt-7" href="/today">
-            Open today&apos;s checklist →
-          </Link>
+            <p className="microlabel hidden max-w-[220px] leading-relaxed md:block">
+              Estimates are ranges from logged dose, capped at the plan promise.
+              Ranges, not guarantees.
+            </p>
+            <Link className="btn btn-accent justify-self-start md:justify-self-end" href="/today">
+              Today&apos;s sheet
+            </Link>
+          </div>
         </section>
 
         <footer className="hrule mt-14 flex flex-col gap-2 pt-5 md:flex-row md:items-center md:justify-between">
-          <span className="microlabel">
-            INTELLGNCE · <b className="text-accent">SCIENTIFIC STALWARTS</b>
-          </span>
-          <span className="microlabel">© 2026 · LOCAL-FIRST</span>
+          <span className="label">Intellgnce · Scientific stalwarts</span>
+          <span className="microlabel">© 2026 · Local-first</span>
         </footer>
       </div>
     </div>

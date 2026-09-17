@@ -43,35 +43,35 @@ export function OnboardingForm({ planId, durationWeeks, alreadyOn }: OnboardingF
   return (
     <form action={submit} className="card-tint space-y-5 p-5 md:p-6">
       {alreadyOn && (
-        <p className="rounded-xl border border-cyan-300/25 bg-cyan-300/[0.06] px-4 py-3 font-mono text-[11px] uppercase leading-relaxed tracking-[0.12em] text-accent">
-          Currently on “{alreadyOn}”. Starting this plan abandons it — every completed
-          minute stays in your history and counts toward progress.
+        <p className="rounded-lg border border-line-strong bg-paper2 px-4 py-3 text-sm leading-relaxed text-ink-soft">
+          Currently on <b className="text-ink">{alreadyOn}</b>. Starting this plan
+          abandons it — every completed minute stays in history and counts.
         </p>
       )}
       <div className="grid gap-4 md:grid-cols-3">
-        <label className="microlabel flex flex-col gap-1.5">
+        <label className="label flex flex-col gap-1.5">
           Start date · Monday
           <input name="startDate" type="date" defaultValue={defaultStart} className="field" required />
         </label>
-        <label className="microlabel flex flex-col gap-1.5">
+        <label className="label flex flex-col gap-1.5">
           Baseline IQ · optional
           <input name="baselineIq" type="number" min={50} max={200} className="field" placeholder="—" />
         </label>
-        <label className="microlabel flex flex-col gap-1.5">
+        <label className="label flex flex-col gap-1.5">
           Target IQ · optional
           <input name="targetIq" type="number" min={50} max={200} className="field" placeholder="—" />
         </label>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="microlabel">
-          TIMEZONE <b>{timezone}</b> · {durationWeeks} WEEKS GENERATED UP FRONT
+          Timezone <b>{timezone}</b> · {durationWeeks} weeks generated up front
         </p>
         <button className="btn btn-accent" type="submit" disabled={pending}>
-          {pending ? "Generating…" : "Commit to this program →"}
+          {pending ? "Generating…" : "Commit to this program"}
         </button>
       </div>
       {error && (
-        <p className="rounded-xl border border-warn/40 bg-warn/10 px-4 py-3 font-mono text-[11px] uppercase tracking-wide text-warn">
+        <p className="rounded-lg border border-warn/50 bg-warn/10 px-4 py-3 text-sm text-warn">
           {error}
         </p>
       )}

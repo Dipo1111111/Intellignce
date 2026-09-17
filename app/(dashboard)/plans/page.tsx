@@ -11,30 +11,30 @@ export default async function PlansPage() {
 
   return (
     <div>
-      <p className="microlabel">FIG.00 — PROGRAM SELECT</p>
-      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
-        Choose the path<span className="text-gradient">.</span>
+      <h1 className="font-display text-5xl font-bold uppercase leading-[0.9] tracking-tight md:text-6xl">
+        Choose the path.
       </h1>
-      <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft">
         A plan is a program of record: duration, expected range, and the exact prescription
         that runs each day. Switching abandons the current run but never its history.
       </p>
 
-      <div className="mt-8 flex flex-col gap-8">
+      <div className="mt-8 flex flex-col gap-6">
         {plans.map(({ plan, modules }, i) => (
           <section key={plan.id} className="card overflow-hidden">
             <div className="border-b border-line p-5 md:p-6">
-              <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <p className="microlabel">
-                    PLAN {String(i + 1).padStart(2, "0")} / {String(plans.length).padStart(2, "0")}
+                  <p className="split-num text-lg text-ink-soft">
+                    {String(i + 1).padStart(2, "0")} <span className="text-rail">/ {String(plans.length).padStart(2, "0")}</span>
                   </p>
-                  <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight md:text-3xl">{plan.name}</h2>
+                  <h2 className="mt-1 font-display text-3xl font-semibold uppercase leading-none tracking-tight md:text-4xl">{plan.name}</h2>
                 </div>
-                <p className="font-mono text-[12px] uppercase tracking-[0.12em]">
-                  <span className="text-accent">+{plan.expectedIqGainMin}</span>
-                  {" → "}
-                  <span className="text-accent">+{plan.expectedIqGainMax}</span> IQ · {plan.durationWeeks} WEEKS
+                <p className="split-num text-2xl">
+                  <span className="text-accent-ink">+{plan.expectedIqGainMin}</span>
+                  <span className="text-ink-soft">–</span>
+                  <span className="text-accent-ink">+{plan.expectedIqGainMax}</span>
+                  <span className="ml-1 font-sans text-sm font-semibold text-ink-soft">IQ · {plan.durationWeeks} wks</span>
                 </p>
               </div>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">{plan.description}</p>
@@ -48,16 +48,16 @@ export default async function PlansPage() {
                 >
                   <div>
                     <span className="text-[14px] font-semibold">{m.name}</span>
-                    <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
-                      ABILITY {m.targetAbility} · WK {m.startWeek}–{m.endWeek}
+                    <span className="label ml-2 text-[10px]">
+                      {m.targetAbility} · wk {m.startWeek}–{m.endWeek}
                     </span>
                   </div>
-                  <span className="microlabel">{m.minutesPerSession} MIN × {m.sessionsPerWeek}/WK</span>
+                  <span className="microlabel">{m.minutesPerSession} min × {m.sessionsPerWeek}/wk</span>
                   <span className="microlabel">
-                    <span className="which">+{m.expectedIqContributionMin}→+{m.expectedIqContributionMax}</span>
+                    <span className="which">+{m.expectedIqContributionMin}–+{m.expectedIqContributionMax}</span>
                   </span>
                   <span className="microlabel hidden md:block">
-                    EVIDENCE: {m.evidenceLevel.toUpperCase()}
+                    Evidence: {m.evidenceLevel}
                   </span>
                 </div>
               ))}

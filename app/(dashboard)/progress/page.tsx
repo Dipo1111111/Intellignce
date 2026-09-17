@@ -75,33 +75,34 @@ export default async function ProgressPage() {
 
   return (
     <div>
-      <p className="microlabel">FIG.02 — PROGRESS & ESTIMATE</p>
-      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
-        The ledger<span className="text-gradient">.</span>
+      <h1 className="font-display text-5xl font-bold uppercase leading-[0.9] tracking-tight md:text-6xl">
+        The ledger.
       </h1>
+      <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+        Every logged minute, converted into an estimated gain range. The curve below
+        is the run&apos;s cord from first session to plan ceiling.
+      </p>
 
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
-        <section className="card-tint sbracket p-5 md:col-span-1">
-          <p className="microlabel">EST. IQ GAIN SO FAR</p>
-          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
-            {estimate ? (
-              <span className="text-gradient">+{estimate.totalMin.toFixed(1)} → +{estimate.totalMax.toFixed(1)}</span>
-            ) : (
-              "—"
-            )}
-            <span className="ml-1 font-mono text-[15px] font-normal text-ink-soft">IQ</span>
-          </p>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
+      <div className="mt-8 grid gap-5 md:grid-cols-3">
+        <section className="card p-5 md:col-span-1">
+          <p className="label">Est. IQ gain so far</p>
+          <p className="split-num mt-2 text-[40px]">
             {estimate
-              ? `${activePlanData?.plan.name} · ${Math.round(estimate.completeRatio * 100)}% OF FULL DOSE`
-              : "NO PROGRAM OF RECORD YET"}
+              ? `+${estimate.totalMin.toFixed(1)} – +${estimate.totalMax.toFixed(1)}`
+              : "—"}
+            <span className="ml-1 font-sans text-[15px] font-semibold text-ink-soft">IQ</span>
+          </p>
+          <p className="microlabel mt-2">
+            {estimate
+              ? `${activePlanData?.plan.name} · ${Math.round(estimate.completeRatio * 100)}% of full dose`
+              : "No program of record yet"}
           </p>
           {baseline && (
-            <p className="mt-4 border-t border-line pt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-soft">
-              BASELINE: <b className="text-ink">{baseline.score}</b>
+            <p className="microlabel mt-4 border-t border-line pt-3">
+              Baseline: <b>{baseline.score}</b>
               {user?.targetIq && (
                 <>
-                  {" · "}TARGET: <b className="text-accent">{user.targetIq}</b>
+                  {" · "}Target: <b className="text-accent-ink">{user.targetIq}</b>
                 </>
               )}
             </p>
@@ -109,32 +110,32 @@ export default async function ProgressPage() {
         </section>
 
         <section className="card p-5">
-          <p className="microlabel">STREAK</p>
-          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
+          <p className="label">Streak</p>
+          <p className="split-num mt-2 text-[40px]">
             {streaks.current}
-            <span className="ml-1 font-mono text-[15px] font-normal text-ink-soft">DAY{streaks.current === 1 ? "" : "S"}</span>
+            <span className="ml-1 font-sans text-[15px] font-semibold text-ink-soft">day{streaks.current === 1 ? "" : "s"}</span>
           </p>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
-            CURRENT · LONGEST {streaks.longest} · TRAINED ON {completedDates.size} DAYS
+          <p className="microlabel mt-2">
+            Current · longest {streaks.longest} · trained on {completedDates.size} days
           </p>
         </section>
 
         <section className="card p-5">
-          <p className="microlabel">MINUTES LOGGED</p>
-          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
+          <p className="label">Minutes logged</p>
+          <p className="split-num mt-2 text-[40px]">
             {formatMinutes(totalCompletedMinutes)}
           </p>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
-            ACROSS {stats.reduce((s, r) => s + r.completedSessions, 0)} TRAINING SESSIONS
+          <p className="microlabel mt-2">
+            Across {stats.reduce((s, r) => s + r.completedSessions, 0)} training sessions
           </p>
         </section>
       </div>
 
       {activePlanData && series.length > 0 && (
-        <section className="mt-6 card p-5 md:p-6">
-          <div className="flex items-baseline justify-between">
-            <p className="microlabel">FIG.02A — CUMULATIVE EST. GAIN / WK</p>
-            <p className="microlabel hidden md:block">MIN / MAX RANGE</p>
+        <section className="mt-5 card p-5 md:p-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="label">Cumulative est. gain / week</p>
+            <p className="microlabel">Min / max range</p>
           </div>
           <div className="mt-4">
             <GainChart series={series} planMax={activePlanData.plan.expectedIqGainMax} />
@@ -142,9 +143,9 @@ export default async function ProgressPage() {
         </section>
       )}
 
-      <section className="mt-6 card overflow-x-auto">
-        <p className="microlabel border-b border-line p-5">
-          FIG.02B — PER-MODULE LEDGER
+      <section className="mt-5 card overflow-x-auto">
+        <p className="label border-b border-line p-5">
+          Per-module ledger
         </p>
         <div className="min-w-[720px]">
           <div className="microlabel grid grid-cols-[1fr_120px_120px_120px] gap-2 border-b border-line px-5 py-2.5">

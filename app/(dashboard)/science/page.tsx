@@ -49,44 +49,40 @@ export default async function SciencePage() {
 
   return (
     <div>
-      <p className="microlabel">FIG.04 — METHOD</p>
-      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
-        Why this, why this much<span className="text-gradient">.</span>
+      <h1 className="font-display text-5xl font-bold uppercase leading-[0.9] tracking-tight md:text-6xl">
+        Why this, why this much.
       </h1>
-      <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+      <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft">
         INTELLGNCE is a hub, not the wheel. Every activity happens on an existing free
         site; the app only schedules, links, and keeps the ledger. The estimate below is
         deliberately conservative and openly derived.
       </p>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">
-        {sections.map((s, i) => {
+        {sections.map((s) => {
           const mod = worked.find((x) => x.m.name === s.name);
           return (
             <section key={s.name} className="card p-5 md:p-6">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="font-display text-lg font-semibold tracking-tight">{s.name}</h2>
-                <span className="microlabel">
-                  {String(i + 1).padStart(2, "0")} ·{" "}
-                  <span
-                    className={
-                      s.evidence === "strong"
-                        ? "text-accent"
-                        : s.evidence === "moderate"
-                          ? "text-pulse"
-                          : "text-ink-soft"
-                    }
-                  >
-                    {s.evidence}
-                  </span>
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="font-display text-[26px] font-semibold uppercase leading-none tracking-wide">{s.name}</h2>
+                <span
+                  className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] ${
+                    s.evidence === "strong"
+                      ? "border-accent/50 bg-accent/10 text-accent-ink"
+                      : s.evidence === "moderate"
+                        ? "border-line-strong bg-paper text-ink-soft"
+                        : "border-line bg-paper text-ink-soft"
+                  }`}
+                >
+                  {s.evidence}
                 </span>
               </div>
-              <p className="microlabel mt-1">{s.ability}</p>
+              <p className="label mt-2">{s.ability}</p>
               <p className="mt-3 text-sm leading-relaxed text-ink-soft">{s.body}</p>
               {mod && (
-                <p className="mt-3 border-t border-line pt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-soft">
-                  DOSE: {mod.m.minutesPerSession} MIN × {mod.m.sessionsPerWeek}/WK × WK{" "}
-                  {mod.m.startWeek}–{mod.m.endWeek} = {mod.full} MIN
+                <p className="microlabel mt-4 border-t border-line pt-3">
+                  Dose: {mod.m.minutesPerSession} min × {mod.m.sessionsPerWeek}/wk × wk{" "}
+                  {mod.m.startWeek}–{mod.m.endWeek} = {mod.full} min
                 </p>
               )}
             </section>
@@ -95,34 +91,34 @@ export default async function SciencePage() {
       </div>
 
       {core && (
-        <section className="card-tint sbracket mt-8 p-6 md:p-8">
-          <p className="microlabel">THE ESTIMATION FORMULA — TRANSPARENT, NOT A GUARANTEE</p>
-          <div className="mt-3 space-y-2 font-mono text-[12px] leading-relaxed text-ink-soft">
-            <p>1. FULL DOSE = MIN/SESSION × SESSIONS/WK × WEEKS ACTIVE</p>
+        <section className="card-tint mt-6 p-6 md:p-8">
+          <p className="label">The estimation formula — transparent, not a guarantee</p>
+          <div className="mt-3 space-y-2 font-mono text-[12px] leading-relaxed text-ink">
+            <p><b>1.</b> Full dose = min/session × sessions/wk × weeks active</p>
             <p>
-              2. RATIO = LOGGED MINUTES / FULL DOSE, CAPPED AT 1.0 (OVER-TRAINING EARNS
-              NOTHING EXTRA)
+              <b>2.</b> Ratio = logged minutes / full dose, capped at 1.0 (over-training earns
+              nothing extra)
             </p>
             <p>
-              3. MODULE GAIN = MIN + (MAX − MIN) × (1 − e<sup>−{SATURATION_K}·RATIO</sup>)
+              <b>3.</b> Module gain = min + (max − min) × (1 − e<sup>−{SATURATION_K}·ratio</sup>)
             </p>
             <p>
-              4. TOTAL = Σ MODULE GAINS, CAPPED AT THE PLAN PROMISE (+{core.plan.expectedIqGainMax} IQ)
+              <b>4.</b> Total = Σ module gains, capped at the plan promise (+{core.plan.expectedIqGainMax} IQ)
             </p>
           </div>
           <div className="mt-4 grid gap-x-8 gap-y-1 md:grid-cols-2">
             {worked.map(({ m, full }) => (
-              <p key={m.id} className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">
-                {m.name}: {full} MIN → +{m.expectedIqContributionMin}…+{m.expectedIqContributionMax}
+              <p key={m.id} className="microlabel">
+                {m.name}: {full} min → +{m.expectedIqContributionMin}…+{m.expectedIqContributionMax}
               </p>
             ))}
           </div>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink-soft">
             <b className="text-ink">Worked example:</b> train perfectly for the whole program —
             every module at 100% ratio lands the curve at about 90% of each module max, so the
-            combined estimate reads roughly <b className="text-accent">+5.0 to +12.6</b> before the
+            combined estimate reads roughly <b className="text-accent-ink">+5.0 to +12.6</b> before the
             plan cap. The cap then displays it honestly as{" "}
-            <b className="text-accent">+5.0 to +7</b>. Estimates are ranges, not promises;
+            <b className="text-accent-ink">+5.0 to +7</b>. Estimates are ranges, not promises;
             results vary with baseline, adherence, and biological limits. INTELLGNCE is a
             research-based training path, not a medical or psychological guarantee.
           </p>

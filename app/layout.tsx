@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Unbounded, Inter, JetBrains_Mono } from "next/font/google";
+import { Barlow_Condensed, Barlow, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const display = Unbounded({
+const display = Barlow_Condensed({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const inter = Inter({
+const barlow = Barlow({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -36,12 +36,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#04060d",
+  themeColor: "#edf0f4",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${display.variable} ${barlow.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-full antialiased">{children}</body>
     </html>
   );
