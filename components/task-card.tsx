@@ -13,6 +13,7 @@ type TaskCardProps = {
   actualMinutes: number | null;
   notes: string | null;
   isToday: boolean;
+  onSaved?: () => void;
 };
 
 function CheckIcon() {
@@ -33,6 +34,7 @@ export function TaskCard({
   actualMinutes,
   notes,
   isToday,
+  onSaved,
 }: TaskCardProps) {
   const [minutes, setMinutes] = useState(actualMinutes ?? null);
   const [notesValue, setNotesValue] = useState(notes ?? "");
@@ -51,6 +53,10 @@ export function TaskCard({
         notes: patch.notes !== undefined ? patch.notes : notesValue,
       });
       if (res && "error" in res) setErr(res.error as string);
+      else {
+        setErr(null);
+        onSaved?.();
+      }
     });
   }
 

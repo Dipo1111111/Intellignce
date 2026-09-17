@@ -1,13 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { getDefaultUser } from "@/lib/user";
-import { getActiveUserPlan, getPlans } from "@/lib/data";
+import { getActiveUserPlan, getPlans, type PlanWithModules } from "@/lib/data";
 import { OnboardingForm } from "@/components/onboarding-form";
+import { PageLoading } from "@/components/loading";
 
-export const dynamic = "force-dynamic";
+type Loaded = {
+  plans: PlanWithModules[];
+  activePlanId: string | null;
+  activePlanName: string | null;
+};
 
-export default async function PlansPage() {
-  const user = await getDefaultUser();
+export default function PlansPage() {
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
 
-  const [plans, active] = await Promise.all([getPlans(), getActiveUserPlan(user.id)]);
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const user = await getDefaultUser();
+      const [plans, active] = await Promise.all([getPlans(), getActiveUserPlan(user.id)]);
+      if (!live) return;
+      setLoaded({
+        plans,
+        activePlanId: active?.plan.id ?? null,
+        activePlanName: active?.plan.name ?? null,
+      });
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  if (!loaded) return <PageLoading label="Plans" />;
+  const { plans, activePlanId, activePlanName } = loaded;
 
   return (
     <div>
@@ -67,7 +93,7 @@ export default async function PlansPage() {
               <OnboardingForm
                 planId={plan.id}
                 durationWeeks={plan.durationWeeks}
-                alreadyOn={active?.plan.id !== plan.id ? active?.plan.name ?? null : null}
+                alreadyOn={activePlanId !== plan.id ? activePlanName : null}
               />
             </div>
           </section>

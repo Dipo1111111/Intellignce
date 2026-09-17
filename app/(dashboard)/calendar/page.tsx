@@ -1,11 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getDefaultUser } from "@/lib/user";
 import { getActiveUserPlan, getDayplansForRun, getRunTasks } from "@/lib/data";
 import { addDays, weekStart } from "@/lib/domain/date";
+import type { Plan, UserPlan } from "@/lib/schema";
+import { PageLoading } from "@/components/loading";
 
 const WEEKDAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] as const;
 
-export const dynamic = "force-dynamic";
+type Loaded = {
+  plan: Plan;
+  userPlan: UserPlan;
+  taskCounts: Map<string, { done: number; total: number }>;
+  today: string;
+} | null;
 
 function phase(counts: { done: number; total: number } | undefined, weekend: boolean): string {
   if (!counts) return weekend ? "Rest" : "Pending";
@@ -13,12 +23,52 @@ function phase(counts: { done: number; total: number } | undefined, weekend: boo
   return counts.done === counts.total ? "Logged" : "Active";
 }
 
-export default async function CalendarPage() {
-  const user = await getDefaultUser();
-  const timezone = user.timezone ?? "UTC";
+export default function CalendarPage() {
+  const [loaded, setLoaded] = useState<Loaded>(null);
+  const [missing, setMissing] = useState(false);
 
-  const active = await getActiveUserPlan(user.id);
-  if (!active) {
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const user = await getDefaultUser();
+      const timezone = user.timezone ?? "UTC";
+      const active = await getActiveUserPlan(user.id);
+      if (!live) return;
+      if (!active) {
+        setMissing(true);
+        return;
+      }
+      const [dps, rows] = await Promise.all([
+        getDayplansForRun(active.userPlan.id),
+        getRunTasks(active.userPlan.id),
+      ]);
+      const taskCounts = new Map<string, { done: number; total: number }>();
+      for (const dp of dps) {
+        const dayTasks = rows.filter((r) => r.task.dayplanId === dp.id);
+        if (dayTasks.length === 0) continue;
+        const done = dayTasks.filter((r) => r.task.completed === 1).length;
+        taskCounts.set(dp.date, { done, total: dayTasks.length });
+      }
+      let today: string;
+      try {
+        today = new Intl.DateTimeFormat("en-CA", {
+          timeZone: timezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date());
+      } catch {
+        today = new Date().toISOString().slice(0, 10);
+      }
+      if (!live) return;
+      setLoaded({ plan: active.plan, userPlan: active.userPlan, taskCounts, today });
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  if (missing) {
     return (
       <div className="card p-6 md:p-10">
         <h1 className="font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight md:text-5xl">
@@ -35,33 +85,9 @@ export default async function CalendarPage() {
     );
   }
 
-  const weeks = Array.from({ length: active.plan.durationWeeks }, (_, i) => i + 1);
-
-  const [dps, rows] = await Promise.all([
-    getDayplansForRun(active.userPlan.id),
-    getRunTasks(active.userPlan.id),
-  ]);
-
-  const taskCounts = new Map<string, { done: number; total: number }>();
-  for (const dp of dps) {
-    const dayTasks = rows.filter((r) => r.task.dayplanId === dp.id);
-    if (dayTasks.length === 0) continue;
-    const done = dayTasks.filter((r) => r.task.completed === 1).length;
-    taskCounts.set(dp.date, { done, total: dayTasks.length });
-  }
-
-  const today = (() => {
-    try {
-      return new Intl.DateTimeFormat("en-CA", {
-        timeZone: timezone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(new Date());
-    } catch {
-      return new Date().toISOString().slice(0, 10);
-    }
-  })();
+  if (!loaded) return <PageLoading label="Calendar" />;
+  const { plan, userPlan, taskCounts, today } = loaded;
+  const weeks = Array.from({ length: plan.durationWeeks }, (_, i) => i + 1);
 
   return (
     <div>
@@ -69,7 +95,7 @@ export default async function CalendarPage() {
         The grid.
       </h1>
       <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-        {active.plan.name} · started {active.userPlan.startDate.split("-").reverse().join(" / ")}.
+        {plan.name} · started {userPlan.startDate.split("-").reverse().join(" / ")}.
         Every cell is a day — select one to open it as a checklist.
       </p>
 
@@ -93,7 +119,7 @@ export default async function CalendarPage() {
                 <span className="microlabel">{wd}</span>
               </div>
               {weeks.map((w) => {
-                const date = addDays(weekStart(active.userPlan.startDate, w), wdIdx);
+                const date = addDays(weekStart(userPlan.startDate, w), wdIdx);
                 const counts = taskCounts.get(date);
                 const isToday = date === today;
                 const weekend = wdIdx >= 5;

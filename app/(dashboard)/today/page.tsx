@@ -1,10 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { getDefaultUser } from "@/lib/user";
 import { getActiveUserPlan, getDayplan, getRunTasks } from "@/lib/data";
 import { estimatePlan } from "@/lib/domain/estimation";
 import { daysBetween, prettyDate, todayInTimeZone, addDays } from "@/lib/domain/date";
-import type { Task } from "@/lib/schema";
+import type { Task, User, UserPlan, Plan, PlanModule } from "@/lib/schema";
 import { TaskCard } from "@/components/task-card";
+import { PageLoading } from "@/components/loading";
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
@@ -18,19 +23,77 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-export default async function TodayPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ date?: string }>;
-}) {
-  const { date: dateParam } = await searchParams;
-  const user = await getDefaultUser();
-  const timezone = user.timezone ?? "UTC";
-  const today = todayInTimeZone(timezone);
+type ActivePlan = {
+  userPlan: UserPlan;
+  plan: Plan;
+  modules: PlanModule[];
+};
+
+type DayData = {
+  tasks: { task: Task; module: PlanModule | undefined }[];
+} | null;
+
+type Loaded = {
+  user: User;
+  today: string;
+  activePlan: ActivePlan | null;
+  day: DayData;
+  week: number;
+  estimate: ReturnType<typeof estimatePlan> | null;
+};
+
+export default function TodayPage() {
+  return (
+    <Suspense fallback={<PageLoading label="Today" />}>
+      <TodayInner />
+    </Suspense>
+  );
+}
+
+function TodayInner() {
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date") ?? undefined;
+  const [tick, setTick] = useState(0);
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
+
+  const load = useCallback(async () => {
+    const user = await getDefaultUser();
+    const timezone = user.timezone ?? "UTC";
+    const today = todayInTimeZone(timezone);
+    const date = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : today;
+    const activePlan = await getActiveUserPlan(user.id);
+    if (!activePlan) {
+      setLoaded({ user, today, activePlan: null, day: null, week: 0, estimate: null });
+      return;
+    }
+    const day = await getDayplan(activePlan.userPlan.id, date);
+    const week = Math.floor(daysBetween(activePlan.userPlan.startDate, date) / 7) + 1;
+    const runTasks = await getRunTasks(activePlan.userPlan.id);
+    const byModule = new Map<string, Task[]>();
+    for (const t of runTasks.map((r) => r.task)) {
+      const list = byModule.get(t.planModuleId) ?? [];
+      list.push(t);
+      byModule.set(t.planModuleId, list);
+    }
+    const estimate = estimatePlan(activePlan.plan, activePlan.modules, byModule);
+    setLoaded({ user, today, activePlan, day, week, estimate });
+  }, [dateParam]);
+
+  useEffect(() => {
+    let live = true;
+    setLoaded(null);
+    void load().catch(() => live && setLoaded(null));
+    return () => {
+      live = false;
+    };
+  }, [load, tick]);
+
+  if (!loaded) return <PageLoading label="Today" />;
+
+  const { today, activePlan, day, week, estimate } = loaded;
   const date = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : today;
   const isToday = date === today;
 
-  const activePlan = await getActiveUserPlan(user.id);
   if (!activePlan) {
     return (
       <div className="card p-6 md:p-10">
@@ -49,20 +112,7 @@ export default async function TodayPage({
     );
   }
 
-  const day = await getDayplan(activePlan.userPlan.id, date);
-  const week = Math.floor(daysBetween(activePlan.userPlan.startDate, date) / 7) + 1;
-
-  // Estimated gain so far from the active run only.
-  const runTasks = await getRunTasks(activePlan.userPlan.id);
-  const byModule = new Map<string, Task[]>();
-  const tasksArr = runTasks.map((r) => r.task);
-  for (const t of tasksArr) {
-    const list = byModule.get(t.planModuleId) ?? [];
-    list.push(t);
-    byModule.set(t.planModuleId, list);
-  }
-  const estimate = estimatePlan(activePlan.plan, activePlan.modules, byModule);
-  const signedNotComplete = estimate.totalMax <= 0;
+  const signedNotComplete = (estimate?.totalMax ?? 0) <= 0;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_290px]">
@@ -114,6 +164,7 @@ export default async function TodayPage({
                 actualMinutes={task.actualMinutes}
                 notes={task.notes}
                 isToday={isToday}
+                onSaved={() => setTick((t) => t + 1)}
               />
             ))}
             {day.tasks.length === 0 && (
@@ -133,18 +184,18 @@ export default async function TodayPage({
         <section className="card p-5">
           <p className="label">Est. IQ gain so far</p>
           <p className="split-num mt-2 text-[40px]">
-            +{estimate.totalMin.toFixed(1)} <span className="text-ink-soft">–</span> +{estimate.totalMax.toFixed(1)}
+            +{(estimate?.totalMin ?? 0).toFixed(1)} <span className="text-ink-soft">–</span> +{(estimate?.totalMax ?? 0).toFixed(1)}
             <span className="ml-1 font-sans text-[15px] font-semibold text-ink-soft">IQ</span>
           </p>
           <p className="microlabel mt-2">
-            {signedNotComplete ? "Train something to seed the estimate" : `${Math.round(estimate.completeRatio * 100)}% of full dose`}
+            {signedNotComplete ? "Train something to seed the estimate" : `${Math.round((estimate?.completeRatio ?? 0) * 100)}% of full dose`}
           </p>
         </section>
         <section className="card p-5">
           <p className="label">Prescribed load</p>
           <ul className="mt-3 space-y-2">
             {activePlan.modules.map((m) => {
-              const pm = estimate.perModule.find((e) => e.module.id === m.id);
+              const pm = estimate?.perModule.find((e) => e.module.id === m.id);
               return (
                 <li key={m.id} className="flex items-baseline justify-between gap-3">
                   <span className="truncate text-[13px] text-ink-soft">{m.name}</span>

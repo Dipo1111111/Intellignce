@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ensureCorePlan } from "@/lib/seed";
 import { asc, eq, inArray } from "drizzle-orm";
 import { dayplans, planModules, plans, tasks, userPlans, users } from "@/lib/schema";
@@ -9,6 +9,7 @@ const EMAIL = "smoke@test.int";
 
 async function main() {
   await ensureCorePlan();
+  const db = await getDb();
   // Fresh user each run.
   const existing = await db.select().from(users).where(eq(users.email, EMAIL)).get();
   let userId: string;

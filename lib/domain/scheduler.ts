@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb, persistDb } from "@/lib/db";
 import { dayplans, tasks, type DayPlan, type Plan, type PlanModule, type Task } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { addDays, WEEKDAYS, weekStart } from "./date";
@@ -40,6 +40,7 @@ export async function generateDaysForUserPlan(
   userPlanId: string,
   startDate: string
 ): Promise<{ dayplans: DayPlan[]; tasks: Task[] }> {
+  const db = await getDb();
   const coreIndexes = weekdayNames(inputPlan.coreWeekdays)
     .slice(0, 5)
     .map((w) => WEEKDAYS.indexOf(w as (typeof WEEKDAYS)[number]))
@@ -102,5 +103,6 @@ export async function generateDaysForUserPlan(
     }
   }
 
+  persistDb();
   return { dayplans: createdDayplans, tasks: createdTasks };
 }

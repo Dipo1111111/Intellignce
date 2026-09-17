@@ -1,21 +1,12 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import initSqlJs, { type Database } from "sql.js";
+import { drizzle, type SQLJsDatabase } from "drizzle-orm/sql-js";
 import * as schema from "@/lib/schema";
-import path from "path";
-import fs from "fs";
 
-// Vercel serverless functions have a read-only filesystem except /tmp.
-// Local dev keeps using ./data so the database persists on disk.
-const dbDir = process.env.VERCEL ? "/tmp" : path.join(process.cwd(), "data");
-const dbPath = path.join(dbDir, "intellgnce.db");
-fs.mkdirSync(dbDir, { recursive: true });
-const sqlite = new Database(dbPath);
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+// Static, local-first database: SQLite compiled to WASM running entirely in
+// the browser. Bytes persist to IndexedDB after every mutation, so the data
+// survives reloads with no server and no account.
 
-// Self-contained schema: fresh databases (e.g. Vercel /tmp) get their
-// tables on first boot. IF NOT EXISTS keeps this safe on existing DBs.
-sqlite.exec(`
+const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
@@ -87,7 +78,84 @@ CREATE TABLE IF NOT EXISTS iq_test_scores (
   source TEXT,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
-`);
+`;
 
-export const db = drizzle(sqlite, { schema });
-export default db;
+const IDB_NAME = "intellgnce";
+const IDB_STORE = "kv";
+const IDB_KEY = "sqlite-bytes";
+
+function openIdb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbGet(): Promise<Uint8Array | null> {
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null;
+  try {
+    const db = await openIdb();
+    const bytes = await new Promise<Uint8Array | null>((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const req = tx.objectStore(IDB_STORE).get(IDB_KEY);
+      req.onsuccess = () => resolve((req.result as Uint8Array | undefined) ?? null);
+      req.onerror = () => reject(req.error);
+    });
+    db.close();
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+async function idbSet(bytes: Uint8Array): Promise<void> {
+  const db = await openIdb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    tx.objectStore(IDB_STORE).put(bytes, IDB_KEY);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+let sqlite: Database | null = null;
+let orm: SQLJsDatabase<typeof schema> | null = null;
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+let initPromise: Promise<SQLJsDatabase<typeof schema>> | null = null;
+
+async function init(): Promise<SQLJsDatabase<typeof schema>> {
+  const SQL = await initSqlJs({
+    locateFile: (f: string) =>
+      typeof window === "undefined" ? `./node_modules/sql.js/dist/${f}` : `/${f}`,
+  });
+  const bytes = await idbGet();
+  sqlite = bytes && bytes.length > 0 ? new SQL.Database(bytes) : new SQL.Database();
+  sqlite.exec(SCHEMA_SQL);
+  orm = drizzle(sqlite, { schema });
+  return orm;
+}
+
+export function getDb(): Promise<SQLJsDatabase<typeof schema>> {
+  if (orm) return Promise.resolve(orm);
+  if (!initPromise) initPromise = init();
+  return initPromise;
+}
+
+/** Persist the in-memory database to IndexedDB (debounced). Call after mutations. */
+export function persistDb(): void {
+  if (typeof window === "undefined" || !sqlite) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      const bytes = sqlite!.export();
+      void idbSet(bytes);
+    } catch {
+      // Persistence is best-effort; the live session keeps working.
+    }
+  }, 150);
+}
+
+export default getDb;

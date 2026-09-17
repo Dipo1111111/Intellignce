@@ -6,6 +6,8 @@
 
 /.next/
 /out/
+# sql.js wasm is copied here by postinstall
+/public/*.wasm
 
 # production
 /build

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { startPlanAction } from "@/lib/actions";
 import { addDays, mondayOf, todayInTimeZone } from "@/lib/domain/date";
 
@@ -11,6 +12,7 @@ type OnboardingFormProps = {
 };
 
 export function OnboardingForm({ planId, durationWeeks, alreadyOn }: OnboardingFormProps) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [timezone] = useState(
@@ -37,6 +39,8 @@ export function OnboardingForm({ planId, durationWeeks, alreadyOn }: OnboardingF
     if (res && "error" in res) {
       setError(res.error as string);
       setPending(false);
+    } else {
+      router.push("/today");
     }
   }
 

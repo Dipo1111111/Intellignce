@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { dayplans, planModules, plans, tasks, userPlans, type Task } from "@/lib/schema";
 import { ensureCorePlan } from "@/lib/seed";
 import { asc, desc, eq, inArray, and } from "drizzle-orm";
@@ -7,6 +7,7 @@ export type PlanWithModules = Awaited<ReturnType<typeof getPlans>>[number];
 
 export async function getPlans() {
   await ensureCorePlan();
+  const db = await getDb();
   const rows = await db
     .select({
       plan: plans,
@@ -29,6 +30,7 @@ export async function getPlans() {
 }
 
 export async function getActiveUserPlan(userId: string) {
+  const db = await getDb();
   const row = await db
     .select({
       userPlan: userPlans,
@@ -51,6 +53,7 @@ export async function getActiveUserPlan(userId: string) {
 }
 
 export async function getDayplan(userPlanId: string, date: string) {
+  const db = await getDb();
   const dayplan = await db
     .select()
     .from(dayplans)
@@ -74,6 +77,7 @@ export async function getDayplan(userPlanId: string, date: string) {
 }
 
 export async function getAllHistory(userId: string) {
+  const db = await getDb();
   const runs = await db
     .select({
       userPlan: userPlans,
@@ -120,6 +124,7 @@ export async function getAllHistory(userId: string) {
 }
 
 export async function getRunTasks(userPlanId: string) {
+  const db = await getDb();
   return db
     .select({ task: tasks })
     .from(tasks)
@@ -128,6 +133,7 @@ export async function getRunTasks(userPlanId: string) {
 }
 
 export async function getDayplansForRun(userPlanId: string) {
+  const db = await getDb();
   return db.select().from(dayplans).where(eq(dayplans.userPlanId, userPlanId)).orderBy(asc(dayplans.date));
 }
 

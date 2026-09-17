@@ -1,11 +1,7 @@
-"use server";
-
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { and, asc, eq } from "drizzle-orm";
 import { getDefaultUser } from "@/lib/user";
-import { db } from "@/lib/db";
+import { getDb, persistDb } from "@/lib/db";
 import { iqTestScores, planModules, plans, tasks, userPlans, users, dayplans } from "@/lib/schema";
 import { generateDaysForUserPlan } from "@/lib/domain/scheduler";
 import { mondayOf } from "@/lib/domain/date";
@@ -24,9 +20,10 @@ export async function startPlanAction(input: {
   timezone?: string;
   baselineIq?: number | null;
   targetIq?: number | null;
-}) {
+}): Promise<{ ok: true } | { error: string }> {
   const user = await getDefaultUser();
   const userId = user.id;
+  const db = await getDb();
 
   const parsed = startPlanSchema.safeParse(input);
   if (!parsed.success) {
@@ -53,7 +50,7 @@ export async function startPlanAction(input: {
   const userPlanId = crypto.randomUUID();
   await db.insert(userPlans).values({
     id: userPlanId,
-    userId: userId,
+    userId,
     planId,
     startDate,
     status: "active",
@@ -66,17 +63,15 @@ export async function startPlanAction(input: {
   if (baselineIq) {
     await db.insert(iqTestScores).values({
       id: crypto.randomUUID(),
-      userId: userId,
+      userId,
       testDate: startDate,
       score: baselineIq,
       source: "baseline",
     });
   }
 
-  revalidatePath("/today");
-  revalidatePath("/calendar");
-  revalidatePath("/progress");
-  redirect("/today");
+  persistDb();
+  return { ok: true };
 }
 
 const updateTaskSchema = z.object({
@@ -97,9 +92,10 @@ export async function completeTaskAction(input: {
   completed?: boolean;
   actualMinutes?: number | null;
   notes?: string | null;
-}) {
+}): Promise<{ ok: true; completed?: boolean } | { error: string }> {
   const user = await getDefaultUser();
   const userId = user.id;
+  const db = await getDb();
 
   const parsed = updateTaskSchema.safeParse(input);
   if (!parsed.success) {
@@ -130,8 +126,6 @@ export async function completeTaskAction(input: {
     })
     .where(eq(tasks.id, taskId));
 
-  revalidatePath("/today");
-  revalidatePath("/calendar");
-  revalidatePath("/progress");
+  persistDb();
   return { ok: true, completed };
 }

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb, persistDb } from "@/lib/db";
 import { planModules, plans } from "@/lib/schema";
 
 export const CORE_PLAN_ID = "core-8wk";
@@ -100,13 +100,14 @@ const coreModules = [
 ];
 
 // Self-bootstrapping: ensures the Core plan exists. Called on every
-// request via getDefaultUser so fresh databases (e.g. Vercel /tmp)
-// work with zero manual setup. Idempotent.
+// load via getDefaultUser so fresh databases work with zero setup. Idempotent.
 export async function ensureCorePlan(): Promise<void> {
+  const db = await getDb();
   const existing = await db.select({ id: plans.id }).from(plans);
   if (existing.some((p) => p.id === CORE_PLAN_ID)) return;
   await db.insert(plans).values(corePlan);
   for (const m of coreModules) {
     await db.insert(planModules).values(m);
   }
+  persistDb();
 }

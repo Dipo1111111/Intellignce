@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb, persistDb } from "@/lib/db";
 import { users, type User } from "@/lib/schema";
 import { ensureCorePlan } from "@/lib/seed";
 import { eq } from "drizzle-orm";
@@ -9,6 +9,7 @@ const DEFAULT_USER_ID = "local";
 // local user, created on first use.
 export async function getDefaultUser(): Promise<User> {
   await ensureCorePlan();
+  const db = await getDb();
   const existing = await db.select().from(users).where(eq(users.id, DEFAULT_USER_ID)).get();
   if (existing) return existing;
 
@@ -18,6 +19,7 @@ export async function getDefaultUser(): Promise<User> {
     passwordHash: "local",
     timezone: "UTC",
   });
+  persistDb();
 
   const created = await db.select().from(users).where(eq(users.id, DEFAULT_USER_ID)).get();
   if (!created) throw new Error("Failed to provision local user.");

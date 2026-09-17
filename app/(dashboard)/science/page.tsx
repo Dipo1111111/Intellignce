@@ -1,44 +1,56 @@
-import { getPlans } from "@/lib/data";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getPlans, type PlanWithModules } from "@/lib/data";
 import { SATURATION_K, moduleFullDose } from "@/lib/domain/estimation";
+import { PageLoading } from "@/components/loading";
 
-export const dynamic = "force-dynamic";
+const sections = [
+  {
+    name: "Dual N-Back",
+    ability: "Working memory → fluid intelligence",
+    evidence: "strong" as const,
+    body: "Meta-analyses of n-back training report small-to-moderate gains in fluid intelligence — on average roughly 3–4 IQ points with consistent training. We schedule 25 minutes, five days a week, for all eight weeks.",
+  },
+  {
+    name: "Matrix Reasoning",
+    ability: "Fluid reasoning (Gf)",
+    evidence: "strong" as const,
+    body: "Matrix-style problems directly exercise the pattern-induction machinery that tests of fluid intelligence measure. Trials show meaningful gains on nonverbal reasoning and IQ-like measures, especially in untrained populations.",
+  },
+  {
+    name: "Learning Sprint (Programming)",
+    ability: "Mixed — education effect",
+    evidence: "strong" as const,
+    body: "Each additional year of schooling is associated with roughly +1 to +5 IQ points on average. Structured, progressive learning in math, logic, or programming is the closest controlled proxy for that effect, so it earns the largest single daily block.",
+  },
+  {
+    name: "Processing Speed",
+    ability: "Speed of processing",
+    evidence: "moderate" as const,
+    body: "Speed-of-processing training (UFOV-style) produces robust gains on speeded tasks and smaller, indirect effects on overall IQ. It runs as a four-week block (weeks 3–6), seven minutes a day — a light, short stimulus.",
+  },
+  {
+    name: "Logic Puzzles (Support)",
+    ability: "Mixed — executive support",
+    evidence: "supportive" as const,
+    body: "Deduction and rule-discovery puzzles support reasoning stamina, working memory load management, and problem decomposition. Direct IQ-point estimates are weaker, so the module is deliberately capped at a small contribution.",
+  },
+];
 
-export default async function SciencePage() {
-  const plans = await getPlans();
+export default function SciencePage() {
+  const [plans, setPlans] = useState<PlanWithModules[] | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    void getPlans().then((p) => live && setPlans(p));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  if (!plans) return <PageLoading label="Science" />;
   const core = plans.find((p) => p.plan.name.includes("8 weeks")) ?? plans[0];
-
-  const sections = [
-    {
-      name: "Dual N-Back",
-      ability: "Working memory → fluid intelligence",
-      evidence: "strong" as const,
-      body: "Meta-analyses of n-back training report small-to-moderate gains in fluid intelligence — on average roughly 3–4 IQ points with consistent training. We schedule 25 minutes, five days a week, for all eight weeks.",
-    },
-    {
-      name: "Matrix Reasoning",
-      ability: "Fluid reasoning (Gf)",
-      evidence: "strong" as const,
-      body: "Matrix-style problems directly exercise the pattern-induction machinery that tests of fluid intelligence measure. Trials show meaningful gains on nonverbal reasoning and IQ-like measures, especially in untrained populations.",
-    },
-    {
-      name: "Learning Sprint (Programming)",
-      ability: "Mixed — education effect",
-      evidence: "strong" as const,
-      body: "Each additional year of schooling is associated with roughly +1 to +5 IQ points on average. Structured, progressive learning in math, logic, or programming is the closest controlled proxy for that effect, so it earns the largest single daily block.",
-    },
-    {
-      name: "Processing Speed",
-      ability: "Speed of processing",
-      evidence: "moderate" as const,
-      body: "Speed-of-processing training (UFOV-style) produces robust gains on speeded tasks and smaller, indirect effects on overall IQ. It runs as a four-week block (weeks 3–6), seven minutes a day — a light, short stimulus.",
-    },
-    {
-      name: "Logic Puzzles (Support)",
-      ability: "Mixed — executive support",
-      evidence: "supportive" as const,
-      body: "Deduction and rule-discovery puzzles support reasoning stamina, working memory load management, and problem decomposition. Direct IQ-point estimates are weaker, so the module is deliberately capped at a small contribution.",
-    },
-  ];
 
   const worked = core
     ? core.modules.map((m) => {
