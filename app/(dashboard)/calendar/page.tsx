@@ -1,22 +1,17 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { getDefaultUser } from "@/lib/user";
 import { getActiveUserPlan, getDayplansForRun, getRunTasks } from "@/lib/data";
-import { db } from "@/lib/db";
-import { users } from "@/lib/schema";
-import { eq } from "drizzle-orm";
 import { addDays, weekStart } from "@/lib/domain/date";
 
 const WEEKDAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] as const;
 
+export const dynamic = "force-dynamic";
+
 export default async function CalendarPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  const user = await getDefaultUser();
+  const timezone = user.timezone ?? "UTC";
 
-  const user = await db.select().from(users).where(eq(users.id, session.user.id)).get();
-  const timezone = user?.timezone ?? "UTC";
-
-  const active = await getActiveUserPlan(session.user.id);
+  const active = await getActiveUserPlan(user.id);
   if (!active) {
     return (
       <div className="border-2 border-ink p-8">
@@ -92,7 +87,7 @@ export default async function CalendarPage() {
                 return (
                   <div key={w} className="border-r border-line p-1 last:border-r-0">
                     <Link
-                      href={`/?date=${date}`}
+                      href={`/today?date=${date}`}
                       aria-label={`${wd} ${date}`}
                       className={`flex min-h-[54px] flex-col items-start justify-between p-1.5 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
                         counts != null && counts.done === counts.total && counts.total > 0

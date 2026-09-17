@@ -1,9 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { users } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { getDefaultUser } from "@/lib/user";
 import { getActiveUserPlan, getDayplan, getRunTasks } from "@/lib/data";
 import { estimatePlan } from "@/lib/domain/estimation";
 import { daysBetween, prettyDate, todayInTimeZone, addDays } from "@/lib/domain/date";
@@ -16,16 +12,13 @@ export default async function TodayPage({
   searchParams: Promise<{ date?: string }>;
 }) {
   const { date: dateParam } = await searchParams;
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-
-  const user = await db.select().from(users).where(eq(users.id, session.user.id)).get();
-  const timezone = user?.timezone ?? "UTC";
+  const user = await getDefaultUser();
+  const timezone = user.timezone ?? "UTC";
   const today = todayInTimeZone(timezone);
   const date = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : today;
   const isToday = date === today;
 
-  const activePlan = await getActiveUserPlan(session.user.id);
+  const activePlan = await getActiveUserPlan(user.id);
   if (!activePlan) {
     return (
       <div className="border-2 border-ink p-8 md:p-12">
@@ -73,15 +66,15 @@ export default async function TodayPage({
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link className="btn btn-ghost px-3 py-2" href={`/?date=${addDays(date, -1)}`}>
+            <Link className="btn btn-ghost px-3 py-2" href={`/today?date=${addDays(date, -1)}`}>
               ←
             </Link>
             {!isToday && (
-              <Link className="btn btn-ghost px-3 py-2" href="/">
+              <Link className="btn btn-ghost px-3 py-2" href="/today">
                 TODAY
               </Link>
             )}
-            <Link className="btn btn-ghost px-3 py-2" href={`/?date=${addDays(date, 1)}`}>
+            <Link className="btn btn-ghost px-3 py-2" href={`/today?date=${addDays(date, 1)}`}>
               →
             </Link>
           </div>

@@ -1,12 +1,9 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { getPlans } from "@/lib/data";
 import { SATURATION_K, moduleFullDose } from "@/lib/domain/estimation";
 
-export default async function SciencePage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+export const dynamic = "force-dynamic";
 
+export default async function SciencePage() {
   const plans = await getPlans();
   const core = plans.find((p) => p.plan.name.includes("8 weeks")) ?? plans[0];
 

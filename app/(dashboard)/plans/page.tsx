@@ -1,13 +1,13 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { getDefaultUser } from "@/lib/user";
 import { getActiveUserPlan, getPlans } from "@/lib/data";
 import { OnboardingForm } from "@/components/onboarding-form";
 
-export default async function PlansPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+export const dynamic = "force-dynamic";
 
-  const [plans, active] = await Promise.all([getPlans(), getActiveUserPlan(session.user.id)]);
+export default async function PlansPage() {
+  const user = await getDefaultUser();
+
+  const [plans, active] = await Promise.all([getPlans(), getActiveUserPlan(user.id)]);
 
   return (
     <div>

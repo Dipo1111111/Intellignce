@@ -1,7 +1,6 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { getDefaultUser } from "@/lib/user";
 import { db } from "@/lib/db";
-import { iqTestScores, users } from "@/lib/schema";
+import { iqTestScores } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import {
   aggregateStats,
@@ -13,18 +12,19 @@ import { computeStreaks } from "@/lib/domain/streaks";
 import { formatMinutes } from "@/lib/format";
 import { GainChart } from "@/components/gain-chart";
 
-export default async function ProgressPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+export const dynamic = "force-dynamic";
 
-  const user = await db.select().from(users).where(eq(users.id, session.user.id)).get();
-  const timezone = user?.timezone ?? "UTC";
-  const history = await getAllHistory(session.user.id);
+export default async function ProgressPage() {
+  const user = await getDefaultUser();
+  if (!user) throw new Error("Local user missing.");
+
+  const timezone = user.timezone ?? "UTC";
+  const history = await getAllHistory(user.id);
   const dayplanRunMap = history.dayplanRunMap ?? new Map<string, string>();
   const baseline = await db
     .select()
     .from(iqTestScores)
-    .where(eq(iqTestScores.userId, session.user.id))
+    .where(eq(iqTestScores.userId, user.id))
     .get();
 
   const stats = aggregateStats(history);

@@ -1,10 +1,12 @@
 import { db } from "@/lib/db";
 import { dayplans, planModules, plans, tasks, userPlans, type Task } from "@/lib/schema";
+import { ensureCorePlan } from "@/lib/seed";
 import { asc, desc, eq, inArray, and } from "drizzle-orm";
 
 export type PlanWithModules = Awaited<ReturnType<typeof getPlans>>[number];
 
 export async function getPlans() {
+  await ensureCorePlan();
   const rows = await db
     .select({
       plan: plans,

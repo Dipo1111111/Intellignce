@@ -1,14 +1,14 @@
 import { db } from "@/lib/db";
-import bcrypt from "bcryptjs";
+import { ensureCorePlan } from "@/lib/seed";
 import { asc, eq, inArray } from "drizzle-orm";
 import { dayplans, planModules, plans, tasks, userPlans, users } from "@/lib/schema";
 import { generateDaysForUserPlan } from "@/lib/domain/scheduler";
 import { cert } from "./helpers";
 
 const EMAIL = "smoke@test.int";
-const PASSWORD = "testtest1234";
 
 async function main() {
+  await ensureCorePlan();
   // Fresh user each run.
   const existing = await db.select().from(users).where(eq(users.email, EMAIL)).get();
   let userId: string;
@@ -36,12 +36,11 @@ async function main() {
       await db.delete(userPlans).where(eq(userPlans.userId, userId));
     }
   } else {
-    const hash = await bcrypt.hash(PASSWORD, 12);
     userId = crypto.randomUUID();
     await db.insert(users).values({
       id: userId,
       email: EMAIL,
-      passwordHash: hash,
+      passwordHash: "local",
       timezone: "Europe/London",
     });
   }
