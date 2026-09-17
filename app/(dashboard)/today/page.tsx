@@ -21,18 +21,20 @@ export default async function TodayPage({
   const activePlan = await getActiveUserPlan(user.id);
   if (!activePlan) {
     return (
-      <div className="border-2 border-ink p-8 md:p-12">
-        <p className="microlabel">{"// "}NO PROGRAM OF RECORD YET</p>
-        <h1 className="mt-3 text-4xl font-bold leading-[0.95] tracking-[-0.02em] md:text-6xl">
-          MEASURED.
+      <div className="panel-hero p-8 md:p-12">
+        <div className="relative">
+        <p className="microlabel">NO PROGRAM OF RECORD YET</p>
+        <h1 className="mt-3 font-display text-4xl font-bold leading-[1.0] tracking-tight md:text-6xl">
+          Measured<span className="text-gradient">.</span>
         </h1>
         <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">
           Pick the Core plan, choose a start, and INTELLGNCE generates every day for the
           next eight weeks. Training always happens off-site — this is the scheduler and ledger.
         </p>
-        <Link className="btn btn-accent mt-6" href="/plans">
-          START A PLAN →
-        </Link>
+          <Link className="btn btn-accent mt-6" href="/plans">
+            Start a plan →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -61,7 +63,7 @@ export default async function TodayPage({
               WEEK {String(week).padStart(2, "0")} / {String(activePlan.plan.durationWeeks).padStart(2, "0")} ·{" "}
               {isToday ? "TODAY" : "HISTORY"}
             </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-[-0.02em] md:text-[44px] md:leading-[0.95]">
+            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight md:text-[44px] md:leading-[1.0]">
               {prettyDate(date)}
             </h1>
           </div>
@@ -120,9 +122,9 @@ export default async function TodayPage({
       <aside className="space-y-5 self-start lg:sticky lg:top-8">
         <section className="card-tint sbracket p-5">
           <p className="microlabel">EST. IQ GAIN SO FAR</p>
-          <p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.02em]">
-            +{estimate.totalMin.toFixed(1)} <span className="text-ink-soft">→</span> +{estimate.totalMax.toFixed(1)}
-            <span className="ml-1 align-baseline text-[15px] text-ink-soft">IQ</span>
+          <p className="mt-2 font-display text-[28px] font-bold leading-none tracking-tight">
+            <span className="text-gradient">+{estimate.totalMin.toFixed(1)} <span>→</span> +{estimate.totalMax.toFixed(1)}</span>
+            <span className="ml-1 align-baseline font-mono text-[15px] font-normal text-ink-soft">IQ</span>
           </p>
           <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
             {signedNotComplete ? "TRAIN SOMETHING TO SEED THE ESTIMATE" : `${Math.round(estimate.completeRatio * 100)}% OF FULL DOSE`}

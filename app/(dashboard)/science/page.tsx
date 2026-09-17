@@ -49,9 +49,9 @@ export default async function SciencePage() {
 
   return (
     <div>
-      <p className="microlabel">{"// "}FIG.04 — METHOD</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] md:text-5xl">
-        WHY THIS, WHY THIS MUCH<span className="text-accent">.</span>
+      <p className="microlabel">FIG.04 — METHOD</p>
+      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        Why this, why this much<span className="text-gradient">.</span>
       </h1>
       <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
         INTELLGNCE is a hub, not the wheel. Every activity happens on an existing free
@@ -65,7 +65,7 @@ export default async function SciencePage() {
           return (
             <section key={s.name} className="card p-5 md:p-6">
               <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-lg font-bold">{s.name}</h2>
+                <h2 className="font-display text-lg font-semibold tracking-tight">{s.name}</h2>
                 <span className="microlabel">
                   {String(i + 1).padStart(2, "0")} ·{" "}
                   <span
@@ -73,7 +73,7 @@ export default async function SciencePage() {
                       s.evidence === "strong"
                         ? "text-accent"
                         : s.evidence === "moderate"
-                          ? "text-ink"
+                          ? "text-pulse"
                           : "text-ink-soft"
                     }
                   >

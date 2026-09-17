@@ -75,19 +75,21 @@ export default async function ProgressPage() {
 
   return (
     <div>
-      <p className="microlabel">{"// "}FIG.02 — PROGRESS & ESTIMATE</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] md:text-5xl">
-        THE LEDGER<span className="text-accent">.</span>
+      <p className="microlabel">FIG.02 — PROGRESS & ESTIMATE</p>
+      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        The ledger<span className="text-gradient">.</span>
       </h1>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         <section className="card-tint sbracket p-5 md:col-span-1">
           <p className="microlabel">EST. IQ GAIN SO FAR</p>
-          <p className="mt-2 text-[34px] font-bold leading-none tracking-[-0.02em]">
-            {estimate
-              ? `+${estimate.totalMin.toFixed(1)} → +${estimate.totalMax.toFixed(1)}`
-              : "—"}
-            <span className="ml-1 text-[15px] text-ink-soft">IQ</span>
+          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
+            {estimate ? (
+              <span className="text-gradient">+{estimate.totalMin.toFixed(1)} → +{estimate.totalMax.toFixed(1)}</span>
+            ) : (
+              "—"
+            )}
+            <span className="ml-1 font-mono text-[15px] font-normal text-ink-soft">IQ</span>
           </p>
           <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
             {estimate
@@ -108,9 +110,9 @@ export default async function ProgressPage() {
 
         <section className="card p-5">
           <p className="microlabel">STREAK</p>
-          <p className="mt-2 text-[34px] font-bold leading-none tracking-[-0.02em]">
+          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
             {streaks.current}
-            <span className="ml-1 text-[15px] font-normal text-ink-soft">DAY{streaks.current === 1 ? "" : "S"}</span>
+            <span className="ml-1 font-mono text-[15px] font-normal text-ink-soft">DAY{streaks.current === 1 ? "" : "S"}</span>
           </p>
           <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">
             CURRENT · LONGEST {streaks.longest} · TRAINED ON {completedDates.size} DAYS
@@ -119,7 +121,7 @@ export default async function ProgressPage() {
 
         <section className="card p-5">
           <p className="microlabel">MINUTES LOGGED</p>
-          <p className="mt-2 text-[34px] font-bold leading-none tracking-[-0.02em]">
+          <p className="mt-2 font-display text-[32px] font-bold leading-none tracking-tight">
             {formatMinutes(totalCompletedMinutes)}
           </p>
           <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft">

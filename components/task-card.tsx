@@ -49,29 +49,48 @@ export function TaskCard({
   const done = optimistic;
 
   return (
-    <div className={`card flex flex-col gap-3 p-5 ${done ? "opacity-75" : ""}`} data-done={done}>
+    <div
+      className={`card group flex flex-col gap-4 p-5 transition-all duration-300 md:p-6 ${
+        done ? "opacity-60 saturate-50" : "hover:border-line-strong hover:shadow-[0_24px_70px_-30px_rgba(34,211,238,0.35)]"
+      }`}
+      data-done={done}
+    >
       <div className="flex items-start gap-4">
         <button
           type="button"
           aria-label={done ? "Mark as not done" : "Mark as done"}
           onClick={() => save({ completed: !done })}
-          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[15px] transition-colors ${
+          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[15px] transition-all duration-200 ${
             done
-              ? "border-accent bg-accent text-paper"
-              : "border-line-strong text-transparent hover:border-accent"
+              ? "border-transparent bg-gradient-to-br from-cyan-300 to-violet-400 text-[#03252c] shadow-[0_0_20px_-2px_rgba(34,211,238,0.9)]"
+              : "border-line-strong text-transparent hover:border-cyan-300/70 hover:shadow-[0_0_16px_-2px_rgba(34,211,238,0.6)]"
           }`}
         >
           ✓
         </button>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h3 className={`text-[19px] font-bold leading-tight ${done ? "line-through decoration-accent" : ""}`}>
+            <h3
+              className={`font-display text-[17px] font-semibold leading-tight tracking-tight ${
+                done ? "text-ink-soft line-through decoration-cyan-300/60" : ""
+              }`}
+            >
               {moduleName}
             </h3>
-            <span className="microlabel">{scheduledMinutes} MIN · <span className="which">[SCHEDULED]</span></span>
+            <span className="microlabel">
+              {scheduledMinutes} MIN · <span className="which">SCHEDULED</span>
+            </span>
           </div>
-          <p className="mt-1 font-mono text-[11px] tracking-[0.12em] uppercase text-ink-soft">
-            ABILITY: {targetAbility} · <a className="text-accent underline underline-offset-2 hover:text-ink" href={url} target="_blank" rel="noopener noreferrer">OPEN TRAINER →</a>
+          <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-soft">
+            ABILITY {targetAbility} ·{" "}
+            <a
+              className="text-accent underline decoration-cyan-300/40 underline-offset-4 transition-colors hover:text-ink"
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open trainer →
+            </a>
           </p>
         </div>
       </div>
@@ -84,10 +103,10 @@ export function TaskCard({
             const note = (fd.get("notes") as string) ?? "";
             save({ actualMinutes: mins, notes: note, completed: done });
           }}
-          className="grid grid-cols-1 gap-3 border-t border-line pt-3 sm:grid-cols-[150px_1fr_auto]"
+          className="grid grid-cols-1 gap-3 border-t border-line pt-4 sm:grid-cols-[140px_1fr_auto]"
         >
-          <label className="microlabel flex flex-col gap-1">
-            ACTUAL MIN
+          <label className="microlabel flex flex-col gap-1.5">
+            Actual min
             <input
               className="field"
               type="number"
@@ -99,8 +118,8 @@ export function TaskCard({
               onChange={(e) => setMinutes(e.target.value === "" ? null : Number(e.target.value))}
             />
           </label>
-          <label className="microlabel flex flex-col gap-1">
-            NOTES
+          <label className="microlabel flex flex-col gap-1.5">
+            Notes
             <input
               className="field"
               name="notes"
@@ -109,10 +128,12 @@ export function TaskCard({
               onChange={(e) => setNotesValue(e.target.value)}
             />
           </label>
-          <button className="btn btn-ghost self-end" type="submit">SAVE</button>
+          <button className="btn btn-ghost self-end" type="submit">
+            Save
+          </button>
         </form>
       )}
-      {err && <p className="font-mono text-[11px] uppercase text-accent">{err}</p>}
+      {err && <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warn">{err}</p>}
     </div>
   );
 }

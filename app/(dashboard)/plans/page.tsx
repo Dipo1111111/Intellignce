@@ -11,9 +11,9 @@ export default async function PlansPage() {
 
   return (
     <div>
-      <p className="microlabel">{"// "}FIG.00 — PROGRAM SELECT</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] md:text-5xl">
-        CHOOSE THE PATH<span className="text-accent">.</span>
+      <p className="microlabel">FIG.00 — PROGRAM SELECT</p>
+      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        Choose the path<span className="text-gradient">.</span>
       </h1>
       <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
         A plan is a program of record: duration, expected range, and the exact prescription
@@ -22,14 +22,14 @@ export default async function PlansPage() {
 
       <div className="mt-8 flex flex-col gap-8">
         {plans.map(({ plan, modules }, i) => (
-          <section key={plan.id} className="border border-line">
+          <section key={plan.id} className="card overflow-hidden">
             <div className="border-b border-line p-5 md:p-6">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <div>
                   <p className="microlabel">
                     PLAN {String(i + 1).padStart(2, "0")} / {String(plans.length).padStart(2, "0")}
                   </p>
-                  <h2 className="mt-1 text-2xl font-bold tracking-[-0.01em] md:text-3xl">{plan.name}</h2>
+                  <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight md:text-3xl">{plan.name}</h2>
                 </div>
                 <p className="font-mono text-[12px] uppercase tracking-[0.12em]">
                   <span className="text-accent">+{plan.expectedIqGainMin}</span>

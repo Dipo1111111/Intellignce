@@ -14,9 +14,11 @@ export default async function CalendarPage() {
   const active = await getActiveUserPlan(user.id);
   if (!active) {
     return (
-      <div className="border-2 border-ink p-8">
-        <p className="microlabel">{"// "}NO PROGRAM OF RECORD</p>
-        <h1 className="mt-2 text-3xl font-bold">START A PLAN TO SEE ITS GRID.</h1>
+      <div className="panel-hero p-8">
+        <div className="relative">
+        <p className="microlabel">NO PROGRAM OF RECORD</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Start a plan to see its grid.</h1>
+        </div>
       </div>
     );
   }
@@ -51,9 +53,9 @@ export default async function CalendarPage() {
 
   return (
     <div>
-      <p className="microlabel">{"// "}FIG.03 — PLAN WINDOW</p>
-      <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] md:text-5xl">
-        THE GRID<span className="text-accent">.</span>
+      <p className="microlabel">FIG.03 — PLAN WINDOW</p>
+      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        The grid<span className="text-gradient">.</span>
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
         {active.plan.name} · started {active.userPlan.startDate.split("-").reverse().join(" / ")}.
@@ -61,7 +63,7 @@ export default async function CalendarPage() {
       </p>
 
       <div className="mt-8 overflow-x-auto">
-        <div className="min-w-[880px] border border-line">
+        <div className="card min-w-[880px] overflow-hidden">
           <div className="grid grid-cols-[88px_repeat(8,1fr)] border-b border-line">
             <div className="border-r border-line p-2" />
             {weeks.map((w) => (
@@ -89,11 +91,11 @@ export default async function CalendarPage() {
                     <Link
                       href={`/today?date=${date}`}
                       aria-label={`${wd} ${date}`}
-                      className={`flex min-h-[54px] flex-col items-start justify-between p-1.5 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
+                      className={`flex min-h-[54px] flex-col items-start justify-between rounded-xl p-1.5 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
                         counts != null && counts.done === counts.total && counts.total > 0
-                          ? "bg-paper2"
+                          ? "bg-cyan-300/10 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.35)]"
                           : ""
-                      } hover:bg-paper2`}
+                      } hover:bg-white/[0.05]`}
                     >
                       <span className="flex w-full items-center justify-between">
                         <span className="text-ink-soft">
